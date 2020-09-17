@@ -1,0 +1,97 @@
+* What is pluggable
+~Pluggable~ is a nano framework (<70 lines of code) implementing a plugin
+architecture for Clojure(Script) applications.
+
+~Pluggable~ is very general. It supports the creation of plugin architectures, but
+there is little imposed in how to actually do it. The only requirement is that a
+plugin is a map with a key 'id' and, optionally, a key 'loader'. Plugins can
+define new keys with arbitrary meanings, which are available to plugins loaded
+afterwards. An application built in this style is simply a collection of
+plugins, each one having access to the functionality of the plugins defined
+beforehand and defining new functionality and extension points for the plugins
+loaded afterwards. 
+
+It's simply impossible to understand how this can be used in practice
+without good examples. Good examples should be, of course, realistic. It's not
+realistic to use this kind of architectures in small, 'todo's' type of applications.
+My plan is to write a realistic mid-size application using this library
+as an example of how this approach can be used in real world scenarios. 
+
+To get a taste of how a plugin for a part of an application can look like when
+using this library. This is a plugin definition for a router plugin for SPAs:
+
+#+BEGIN_SRC clojure
+(def plugin
+  {:id         ::routing
+   :loader     #'loader
+   :beans      {:main-component [vector #'current-page ::router :ui-page-template]
+                ::router        {:constructor [#'create-router]
+                                 :mutators    [[#'init-router ::routes]]}
+                ::about-page    about-page}
+   ::routes    [["/about"
+                 {:name ::about-page
+                  :view ::about-page}]]
+   ::home-page #'ui-home-page})
+#+END_SRC
+
+This plugin defines two extension points (~::routes~ and ~::home-page~) and
+defines default values. Other plugins can use this extension points to overwrite
+the home page or add routes to the application. The code that process this
+extension points is defined in the loader function (code now shown).
+
+If you wonder what the ~:beans~ key means, this is a key defined by another
+plugin not shown here that defines this extension points to allow plugins to
+define 'beans' to be processed by the Injectable library. That library is not a
+requirement for ~Pluggable~, but I personally use the two together.
+
+* Why
+Because it's a lot of fun to develop applications as a series of plugins.
+
+From a less subjective point of view, we have seen repeatedly than, sooner than
+later, an application incurres on a "growing tax", where adding  
+new functionality becomes increasingly costly and working with that codebase is
+painful. 
+
+The standard strategy to deal with this problem is to change projects, jobs or
+career paths. That works for individuals, but normally not for projects or organisations.
+These usually follow the strategy to adopt modularity. A plugin
+architecture is a form of modularity optimised for making application
+extensivility easy. 
+
+I became familiarized with this style of development when launching the project
+Monodevelop, which started as a port of the #Develop IDE to Linux. The plugin
+architecture of #Develop made the port easy to do, one module at a time, and the
+code easier to understand.
+
+All big commercial applications use some kind of plugin architecture. The main
+reason is to allow third party developers to add functionality to the platform
+even without access to the source code. But open source software also usually
+embraces that style, in some cases in a radical style where all the
+functionality of the application is implemented via plugins (e.g. Eclipse).
+
+My main reason to adopt this style of development is that it's a /lot/ of fun to
+develop like this.  
+
+* How
+This technique comes from the object oriented world, even if it can be applied
+with a functional flavor. The object orientation of the philosophy is not bad in
+itself:
+
+https://www.youtube.com/watch?v=HSk5fdKbd3o 
+
+~Pluggable~ targets the set up of the application state/configuration and stops
+there. It is therefore purely functional. Nevertheless, the constructed
+state/configuration can be arbitrarily rich and contain any kind of elements. 
+
+This nano framework consists in one function, that takes an initial
+value for the map and a list of plugins and returns the transformed map.
+Conceptually, ~Pluggable~ is a function 'f' which takes a collection and an
+initial state and applies each of the plugins to transform the state:
+
+(f state plugins) -> state
+
+This means that ~Pluggable~ is a simply a reducer. 
+
+Its power comes from the fact that every plugin can define it's own extension
+points so other plugins can tap into them and also define their own extension
+points. But that a story for another day.
