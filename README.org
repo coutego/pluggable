@@ -37,7 +37,7 @@ using this library. This is a plugin definition for a router plugin for SPAs:
 This plugin defines two extension points (~::routes~ and ~::home-page~) and
 defines default values. Other plugins can use this extension points to overwrite
 the home page or add routes to the application. The code that process this
-extension points is defined in the loader function (code now shown).
+extension points is defined in the loader function (code not shown).
 
 If you wonder what the ~:beans~ key means, this is a key defined by another
 plugin not shown here that defines this extension points to allow plugins to
