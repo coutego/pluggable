@@ -92,6 +92,6 @@ initial state and applies each of the plugins to transform the state:
 
 This means that ~Pluggable~ is a simply a reducer. 
 
-Its power comes from the fact that every plugin can define it's own extension
+Its power comes from the fact that every plugin can define its own extension
 points so other plugins can tap into them and also define their own extension
 points. But that a story for another day.
