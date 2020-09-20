@@ -21,13 +21,11 @@ To get a taste of how a plugin for a part of an application can look like when
 using this library. This is a plugin definition for a router plugin for SPAs:
 
 #+BEGIN_SRC clojure
-
 (def plugin
   {:id         ::routing
-   :beans      {:main-component [vector #'current-page ::router :ui-page-template]
-                ::router        {:constructor [#'create-router]
-                                 :mutators    [[#'init-router ::routes]]}
-                ::about-page    about-page}
+   :beans      {:main-component [vector current-page ::router :ui-page-template]
+                ::router        {:constructor [create-router]
+                                 :mutators    [[init-router ::routes]]}
    :extensions [{:key     ::home-page
                  :handler ext-handler-home-page
                  :doc     "Fixes the home page (route) of the application,
@@ -37,8 +35,8 @@ using this library. This is a plugin definition for a router plugin for SPAs:
                  :doc     "Adds the given list of routes to the routes of the application"}]
    ::routes    [["/about"
                  {:name ::about-page
-                  :view ::about-page}]]
-   ::home-page #'ui-home-page})
+                  :view about-page}]]
+   ::home-page ui-home-page})
 #+END_SRC
 
 This plugin defines two extension points (~::routes~ and ~::home-page~) and
