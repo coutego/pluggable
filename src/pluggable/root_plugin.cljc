@@ -28,8 +28,8 @@
 (s/def ::extensions (s/or :nil  nil?
                           :exts (s/coll-of ::extension)))
 
-(defn process-extension [{:keys [db plugins] :as acc}
-                         {:keys [key handler doc spec] :as ext}]
+(defn process-extension [{:keys [db plugins]}
+                         {:keys [key handler spec]}]
   (when spec
     (let [vals (map key plugins)]
       (doall (for [val vals]
@@ -41,7 +41,7 @@
    :plugins plugins})
 
 (defn load-plugin [{:keys [db plugins] :as acc} ;; FIXME: do we need the destructuring?
-                   {:keys [extensions] :as p}]
+                   {:keys [extensions]}]
   {:pre [(s/valid? ::extensions extensions)]} ;; FIXME: better error messages
 
   {:db      (:db (reduce process-extension acc extensions))
