@@ -21,13 +21,20 @@ To get a taste of how a plugin for a part of an application can look like when
 using this library. This is a plugin definition for a router plugin for SPAs:
 
 #+BEGIN_SRC clojure
+
 (def plugin
   {:id         ::routing
-   :loader     #'loader
    :beans      {:main-component [vector #'current-page ::router :ui-page-template]
                 ::router        {:constructor [#'create-router]
                                  :mutators    [[#'init-router ::routes]]}
                 ::about-page    about-page}
+   :extensions [{:key     ::home-page
+                 :handler ext-handler-home-page
+                 :doc     "Fixes the home page (route) of the application,
+                           replacing any previously defined home page"}
+                {:key     ::routes
+                 :handler ext-handler-routes
+                 :doc     "Adds the given list of routes to the routes of the application"}]
    ::routes    [["/about"
                  {:name ::about-page
                   :view ::about-page}]]
@@ -35,9 +42,11 @@ using this library. This is a plugin definition for a router plugin for SPAs:
 #+END_SRC
 
 This plugin defines two extension points (~::routes~ and ~::home-page~) and
-defines default values. Other plugins can use this extension points to overwrite
+defines default values for them (a plugin can already use its own extensions). 
+Other plugins can use this extension points to overwrite
 the home page or add routes to the application. The code that process this
-extension points is defined in the loader function (code not shown).
+extension points is defined in the ~ext-handler-home-page~ and
+~ext-handler-routes~ functions (code not shown here).
 
 If you wonder what the ~:beans~ key means, this is a key defined by another
 plugin not shown here that defines this extension points to allow plugins to
