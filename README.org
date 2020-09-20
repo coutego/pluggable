@@ -11,10 +11,14 @@ plugins, each one having access to the functionality of the plugins defined
 beforehand and defining new functionality and extension points for the plugins
 loaded afterwards. 
 
-It's simply impossible to understand how this can be used in practice
-without good examples. Good examples should be, of course, realistic. It's not
+There is a special plugin (~root-plugin~) which is loaded by default and offers
+some standard functionality, as the ability to define extension points.
+
+It's impossible to understand how this library can be used in practice
+without good examples. Those examples should be, of course, realistic. The issue
+is that it's not
 realistic to use this kind of architectures in small, 'todo's' type of applications.
-My plan is to write a realistic mid-size application using this library
+My plan is therefore to write a realistic mid-size application using this library
 as an example of how this approach can be used in real world scenarios. 
 
 To get a taste of how a plugin for a part of an application can look like when
@@ -42,12 +46,12 @@ using this library. This is a plugin definition for a router plugin for SPAs:
 This plugin defines two extension points (~::routes~ and ~::home-page~) and
 defines default values for them (a plugin can already use its own extensions). 
 Other plugins can use these extension points to overwrite
-the home page or add routes to the application. The code that process this
+the home page or add other routes to the application. The code that process this
 extension points is defined in the ~ext-handler-home-page~ and
 ~ext-handler-routes~ functions (code not shown here).
 
 If you wonder what the ~:beans~ key means, this is a key defined by another
-plugin not shown here that defines this extension points to allow plugins to
+plugin not shown here that defines these extension points to allow plugins to
 define 'beans' to be processed by the Injectable library. That library is not a
 requirement for ~Pluggable~, but I personally use the two together.
 
