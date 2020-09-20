@@ -41,7 +41,7 @@ using this library. This is a plugin definition for a router plugin for SPAs:
 
 This plugin defines two extension points (~::routes~ and ~::home-page~) and
 defines default values for them (a plugin can already use its own extensions). 
-Other plugins can use this extension points to overwrite
+Other plugins can use these extension points to overwrite
 the home page or add routes to the application. The code that process this
 extension points is defined in the ~ext-handler-home-page~ and
 ~ext-handler-routes~ functions (code not shown here).
