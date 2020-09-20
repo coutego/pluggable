@@ -46,5 +46,5 @@
   (:db (reduce load-plugin {:db db :plugins plugins} plugins)))
 
 (def plugin
-  {:key    :root-plugin
+  {:id     :root-plugin
    :loader loader})

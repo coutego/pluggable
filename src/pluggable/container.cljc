@@ -61,5 +61,5 @@
             "pluggable.core/load-plugins: db must be a map")
   (crash-if (not (s/valid? ::plugins plugins))
             (str "pluggable.core/load-plugins: plugins does not comply with spec: "
-                 (s/explain ::plugins plugins)))
+                 (s/explain-str ::plugins plugins)))
   (load-plugins-impl (process-plugin-deps plugins) (or db {})))
