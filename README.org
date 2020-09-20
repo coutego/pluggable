@@ -4,9 +4,15 @@ architecture for Clojure(Script) applications.
 
 ~Pluggable~ is very general. It supports the creation of plugin architectures, but
 there is little imposed in how to actually do it. The only requirement is that a
-plugin is a map with a key 'id' and, optionally, a key 'loader'. Plugins can
-define new keys with arbitrary meanings, which are available to plugins loaded
-afterwards. An application built in this style is simply a collection of
+plugin is a map with a key 'id' and, optionally, a key 'loader' pointing to a
+function that can load other plugins later in the list of plugins.
+A plugin can optionally refer to dependencies to other plugins (~:deps~), which
+then are loaded before the plugin that defines the dependency (but only once).
+Circular dependencies are automatically detected.
+
+Plugins can define "extensions": new keys with arbitrary meanings, which are available 
+to plugins loaded afterwards. 
+An application built in this style is simply a collection of
 plugins, each one having access to the functionality of the plugins defined
 beforehand and defining new functionality and extension points for the plugins
 loaded afterwards. 
@@ -14,15 +20,22 @@ loaded afterwards.
 There is a special plugin (~root-plugin~) which is loaded by default and offers
 some standard functionality, as the ability to define extension points.
 
-It's impossible to understand how this library can be used in practice
-without good examples. Those examples should be, of course, realistic. The issue
-is that it's not
-realistic to use this kind of architectures in small, 'todo's' type of applications.
-My plan is therefore to write a realistic mid-size application using this library
+A plugin architecture allow for the initialization code to be completely
+declarative, rather than imperative. By standardizing how the initialization of
+the application code is done, it becomes much easier to reuse code between
+applications.  
+
+Plugin based architectures don't make sense in very small applications. 
+Also, it's impossible to understand how this library can be used in practice
+without a good example, which must be realistic. The two previous facts mean
+that in order to give a meaningful example of how to use the library, a non
+trivial application should be used.
+I plan to write a realistic mid-size application using this library
 as an example of how this approach can be used in real world scenarios. 
 
 To get a taste of how a plugin for a part of an application can look like when
-using this library. This is a plugin definition for a router plugin for SPAs:
+using this library, we can see an example. 
+This is a plugin definition for a router plugin for SPAs:
 
 #+BEGIN_SRC clojure
 (def plugin

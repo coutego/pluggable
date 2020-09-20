@@ -1,7 +1,8 @@
 (ns pluggable.root-plugin
-  "This plugin implements some common utilities that other plugins probably would need to use.
+  "This plugin implements some common utilities that all plugins probably would need to use.
+   It is loaded by default by the Pluggable as the first plugin.
 
-   In the first place, it defines an :extensions extension point. An extensions key declares
+   It defines an :extensions extension point. An extensions key declares
    what extensions a plugin accepts and how to handle them. The :extensions extension point
    must be a collection of maps of the form [key* handler* doc* spec?]. Example:
 
@@ -13,9 +14,7 @@
 
   A handler must be a function of the form taking as input [db values], where
   db is the accumulated state and values is a vector with all the values associated
-  by plugins to the given key
-  "
-
+  by plugins to the given key."
   (:require [clojure.spec.alpha :as s]))
 
 (s/def ::key keyword?)

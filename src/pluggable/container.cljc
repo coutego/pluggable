@@ -1,4 +1,5 @@
 (ns pluggable.container
+  "The Pluggable plugin container"
   (:require [clojure.spec.alpha :as s]
             [clojure.string :as str]
             [clojure.set :as cs]))
