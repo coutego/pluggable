@@ -9,7 +9,12 @@
      [{:key ::routes
        :handler process-routes
        :doc \"The routes extension <etc.>\"}]
-       :spec ::routes-spec} "
+       :spec ::routes-spec}
+
+  A handler must be a function of the form taking as input [db values], where
+  db is the accumulated state and values is a vector with all the values associated
+  by plugins to the given key
+  "
 
   (:require [clojure.spec.alpha :as s]))
 
