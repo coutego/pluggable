@@ -30,15 +30,16 @@
 
 (defn process-extension [{:keys [db plugins]}
                          {:keys [key handler spec]}]
-  (when spec
-    (let [vals (map key plugins)]
+
+  (let [vals (vec (filter #(not (nil? %)) (map key plugins)))]
+    (when spec
       (doall (for [val vals]
                (when-not (s/valid? spec val)
                  (throw
                   (ex-info
-                   (str "Wrong value for extension " key ": " val) {})))))))
-  {:db (handler db (mapv key plugins))
-   :plugins plugins})
+                   (str "Wrong value for extension " key ": " val) {}))))))
+    {:db      (handler db vals)
+     :plugins plugins}))
 
 (defn load-plugin [{:keys [db plugins] :as acc} ;; FIXME: do we need the destructuring?
                    {:keys [extensions]}]
