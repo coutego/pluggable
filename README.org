@@ -32,7 +32,7 @@ using this library. This is a plugin definition for a router plugin for SPAs:
                                  :mutators    [[init-router ::routes]]}
    :extensions [{:key     ::home-page
                  :handler ext-handler-home-page
-                 :doc     "Fixes the home page (route) of the application,
+                 :doc     "Defines the home page (route) of the application,
                            replacing any previously defined home page"}
                 {:key     ::routes
                  :handler ext-handler-routes
