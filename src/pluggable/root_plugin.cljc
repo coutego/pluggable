@@ -1,6 +1,6 @@
 (ns pluggable.root-plugin
   "This plugin implements some common utilities that all plugins probably would need to use.
-   It is loaded by default by the Pluggable as the first plugin.
+   It is loaded by default by Pluggable as the first plugin.
 
    It defines an :extensions extension point. An extensions key declares
    what extensions a plugin accepts and how to handle them. The :extensions extension point
