@@ -1,3 +1,6 @@
+#+TITLE: Pluggable
+#+OPTIONS: author:nil
+
 * What is pluggable
 ~Pluggable~ is a nano framework (<70 lines of code) implementing a plugin
 architecture for Clojure(Script) applications.
@@ -42,7 +45,7 @@ This is a plugin definition for a router plugin for SPAs:
   {:id         ::routing
    :beans      {:main-component [vector current-page ::router :ui-page-template]
                 ::router        {:constructor [create-router]
-                                 :mutators    [[init-router ::routes]]}
+                                 :mutators    [[init-router ::routes]]}}
    :extensions [{:key     ::home-page
                  :handler ext-handler-home-page
                  :doc     "Defines the home page (route) of the application,
@@ -112,7 +115,9 @@ value for the map and a list of plugins and returns the transformed map.
 Conceptually, ~Pluggable~ is a function 'f' which takes a collection and an
 initial state and applies each of the plugins to transform the state:
 
+#+begin_src clojure
 (f state plugins) -> state
+#+end_src
 
 This means that ~Pluggable~ is a simply a reducer. 
 
