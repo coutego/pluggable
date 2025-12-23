@@ -15,34 +15,50 @@
   A handler must be a function of the form taking as input [db values], where
   db is the accumulated state and values is a vector with all the values associated
   by plugins to the given key."
-  (:require [clojure.spec.alpha :as s]))
+  (:require [malli.core :as m]
+            [malli.error :as me]))
 
-(s/def ::key keyword?)
-(s/def ::handler fn?)
-(s/def ::doc string?)
-(s/def ::spec (s/or :kw   keyword?
-                    :pred fn?))
-(s/def ::extension (s/keys :req-un [::key ::handler ::doc]
-                           :opt-un [::spec]))
-(s/def ::extensions (s/or :nil  nil?
-                          :exts (s/coll-of ::extension)))
+(def extension-schema
+  [:map
+   [:key keyword?]
+   [:handler fn?]
+   [:doc string?]
+   [:spec {:optional true} [:or keyword? fn?]]])
+
+(def extensions-schema
+  [:maybe [:sequential extension-schema]])
+
+(defn- get-extension-value [plugin key strict?]
+  (let [contrib (get-in plugin [:contributions key])]
+    (if (not (nil? contrib))
+      contrib
+      (when-not strict?
+        (let [root-val (get plugin key)]
+          (when (not (nil? root-val))
+            ;; :beans is a special key that is expected to be at the root
+            (when (not= key :beans)
+              (println "WARNING: Extension" key "found at root of plugin" (:id plugin) 
+                       "- please move to :contributions"))
+            root-val))))))
 
 (defn- process-extension [{:keys [db plugins]}
                           {:keys [key handler spec]}]
-
-  (let [vals (vec (filter #(not (nil? %)) (map key plugins)))]
+  (let [strict? (:pluggable/strict? db)
+        vals (vec (filter #(not (nil? %)) (map #(get-extension-value % key strict?) plugins)))]
     (when spec
       (doall (for [val vals]
-               (when-not (s/valid? spec val)
+               (when-let [errors (m/explain spec val)]
                  (throw
                   (ex-info
-                   (str "Wrong value for extension " key ": " val) {}))))))
+                   (str "Wrong value for extension " key ": " (me/humanize errors))
+                   {:errors errors}))))))
     {:db      (handler db vals)
      :plugins plugins}))
 
 (defn- load-plugin [{:keys [db plugins] :as acc} ;; FIXME: do we need the destructuring?
                     {:keys [extensions]}]
-  {:pre [(s/valid? ::extensions extensions)]} ;; FIXME: better error messages
+  (when-let [errors (m/explain extensions-schema extensions)]
+    (throw (ex-info "Invalid extensions schema" {:errors (me/humanize errors)})))
 
   {:db      (:db (reduce process-extension acc extensions))
    :plugins (rest plugins)})

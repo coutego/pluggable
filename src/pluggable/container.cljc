@@ -1,14 +1,18 @@
 (ns pluggable.container
   "The Pluggable plugin container"
-  (:require [clojure.spec.alpha :as s]
-            [clojure.string :as str]
-            [clojure.set :as cs]))
+  (:require [malli.core :as m]
+            [malli.error :as me]
+            [clojure.string :as str]))
 
-(s/def ::id keyword?)
-(s/def ::deps (s/coll-of ::plugin))
-(s/def ::loader fn?)
-(s/def ::plugin (s/keys :req-un [::id] :opt-un [::deps ::loader]))
-(s/def ::plugins (s/coll-of ::plugin))
+(def plugin-schema
+  [:map
+   [:id keyword?]
+   [:doc {:optional true} string?]
+   [:deps {:optional true} [:sequential keyword?]]
+   [:loader {:optional true} fn?]])
+
+(def plugins-schema
+  [:sequential [:ref #'plugin-schema]])
 
 (defn- crash [msg] (throw (ex-info msg {:cause msg})))
 (defn- crash-if [condition msg] (when condition (crash msg)))
@@ -60,7 +64,8 @@
             "pluggable.core/load-plugins: plugins need to be passed as a vector")
   (crash-if (not (or (nil? db) (map? db)))
             "pluggable.core/load-plugins: db must be a map")
-  (crash-if (not (s/valid? ::plugins plugins))
-            (str "pluggable.core/load-plugins: plugins does not comply with spec: "
-                 (s/explain-str ::plugins plugins)))
+  (when-let [errors (m/explain plugins-schema plugins)]
+    (crash-if true
+              (str "pluggable.core/load-plugins: plugins does not comply with schema: "
+                   (me/humanize errors))))
   (load-plugins-impl (process-plugin-deps plugins) (or db {})))
