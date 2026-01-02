@@ -32,7 +32,7 @@
               (into {} (map #(process-bean-entry % capture-source?) beans))))
     plugin-map))
 
-(defn- validate-plugin [p]
+(defn validate-plugin [p]
   (when-not (:id p)
     (throw (ex-info "Plugin must have an :id" {:plugin p})))
   p)

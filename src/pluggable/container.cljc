@@ -12,7 +12,7 @@
    [:loader {:optional true} fn?]])
 
 (def plugins-schema
-  [:sequential [:ref #'plugin-schema]])
+  [:sequential plugin-schema])
 
 (defn- crash [msg] (throw (ex-info msg {:cause msg})))
 (defn- crash-if [condition msg] (when condition (crash msg)))
